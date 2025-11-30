@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Keys Configuration - Recon Command Generator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-card: white;
+            --text-primary: #333;
+            --text-secondary: #6c757d;
+            --border-color: #667eea;
+            --shadow-card: 0 10px 30px rgba(0,0,0,0.2);
+            --input-border: #667eea;
+            --input-focus: rgba(102, 126, 234, 0.25);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --bg-card: #1e1e2e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --border-color: #7c3aed;
+            --shadow-card: 0 10px 30px rgba(0,0,0,0.5);
+            --input-border: #7c3aed;
+            --input-focus: rgba(124, 58, 237, 0.25);
+        }
+
+        body {
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 0;
+            transition: background 0.3s ease;
+        }
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            box-shadow: var(--shadow-card);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        .api-key-card {
+            background: var(--bg-card);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+            transition: background 0.3s ease;
+        }
+        .api-key-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+        .api-key-description {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+        .api-key-input {
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            font-family: 'Courier New', monospace;
+        }
+        .api-key-input:focus {
+            border-color: var(--input-border);
+            box-shadow: 0 0 0 0.2rem var(--input-focus);
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        .btn-save {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        [data-theme="dark"] .btn-save {
+            background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+        }
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .btn-back {
+            background: transparent;
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 10px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .btn-back:hover {
+            background: var(--border-color);
+            color: white;
+        }
+        .dark-mode-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .dark-mode-toggle:hover {
+            background: var(--border-color);
+            color: white;
+            transform: scale(1.05);
+        }
+        .success-message {
+            background: #28a745;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        h1 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            transition: color 0.3s ease;
+        }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+        }
+        [data-theme="dark"] .info-box {
+            background: #1a2332;
+            border-left-color: #7c3aed;
+        }
+        .info-box p {
+            margin: 0;
+            color: var(--text-primary);
+        }
+        @media (max-width: 768px) {
+            .header-card {
+                padding: 20px;
+            }
+            .dark-mode-toggle {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 15px;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-card">
+            <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+                <i class="bi bi-moon-fill" id="darkModeIcon"></i>
+            </button>
+            <h1><i class="bi bi-key"></i> API Keys Configuration</h1>
+            <p class="subtitle">أدخل مفاتيح API الخاصة بك - سيتم استبدالها تلقائياً في الأوامر</p>
+            
+            <div class="info-box">
+                <p><i class="bi bi-info-circle"></i> <strong>ملاحظة:</strong> المفاتيح تُحفظ محلياً في المتصفح فقط. لن يتم إرسالها إلى أي خادم.</p>
+            </div>
+
+            <div id="apiKeysContainer">
+                <!-- API Keys will be loaded here -->
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <i class="bi bi-check-circle"></i> تم حفظ المفاتيح بنجاح!
+            </div>
+
+            <div class="d-flex gap-3 justify-content-between mt-4">
+                <a href="/" class="btn btn-back">
+                    <i class="bi bi-arrow-left"></i> العودة للصفحة الرئيسية
+                </a>
+                <button class="btn btn-save" id="saveBtn">
+                    <i class="bi bi-save"></i> حفظ جميع المفاتيح
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const htmlElement = document.documentElement;
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const saveBtn = document.getElementById('saveBtn');
+        const successMessage = document.getElementById('successMessage');
+        const apiKeysContainer = document.getElementById('apiKeysContainer');
+
+        // API Keys configuration
+        const apiKeysConfig = [
+            {
+                id: 'virustotal_api',
+                label: 'VirusTotal API Key',
+                placeholder: '[api-key]',
+                description: 'مطلوب لأوامر VirusTotal (Domain Siblings & IP Enumeration)',
+                storageKey: 'vt_api_key'
+            },
+            {
+                id: 'github_token',
+                label: 'GitHub Token',
+                placeholder: '[github_token]',
+                description: 'مطلوب لأمر GitHub Subdomains',
+                storageKey: 'github_token'
+            },
+            {
+                id: 'shodan_api',
+                label: 'Shodan API Key',
+                placeholder: 'YourAPIKEY',
+                description: 'مطلوب لأوامر Shosubgo (Subdomain Enumeration)',
+                storageKey: 'shodan_api_key'
+            },
+            {
+                id: 'asn_number',
+                label: 'ASN Number',
+                placeholder: '[asnno]',
+                description: 'مطلوب لأمر Amass Intel (ASN)',
+                storageKey: 'asn_number'
+            },
+            {
+                id: 'wpscan_token',
+                label: 'WPScan API Token',
+                placeholder: '<here>',
+                description: 'مطلوب لأمر WPScan WordPress Reconnaissance',
+                storageKey: 'wpscan_token'
+            }
+        ];
+
+        // Dark Mode Functionality
+        function initDarkMode() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            setTheme(theme);
+        }
+
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                htmlElement.setAttribute('data-theme', 'dark');
+                darkModeIcon.classList.remove('bi-moon-fill');
+                darkModeIcon.classList.add('bi-sun-fill');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                htmlElement.setAttribute('data-theme', 'light');
+                darkModeIcon.classList.remove('bi-sun-fill');
+                darkModeIcon.classList.add('bi-moon-fill');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function toggleDarkMode() {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        }
+
+        initDarkMode();
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+
+        // Load saved API keys
+        function loadApiKeys() {
+            apiKeysConfig.forEach(config => {
+                const saved = localStorage.getItem(config.storageKey);
+                if (saved) {
+                    document.getElementById(config.id).value = saved;
+                }
+            });
+        }
+
+        // Save API keys
+        function saveApiKeys() {
+            apiKeysConfig.forEach(config => {
+                const input = document.getElementById(config.id);
+                const value = input.value.trim();
+                if (value) {
+                    localStorage.setItem(config.storageKey, value);
+                } else {
+                    localStorage.removeItem(config.storageKey);
+                }
+            });
+
+            // Show success message
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 3000);
+        }
+
+        // Render API key inputs
+        function renderApiKeys() {
+            let html = '';
+            apiKeysConfig.forEach(config => {
+                html += `
+                    <div class="api-key-card">
+                        <div class="api-key-label">
+                            <i class="bi bi-key-fill"></i> ${config.label}
+                        </div>
+                        <div class="api-key-description">
+                            ${config.description}
+                        </div>
+                        <input 
+                            type="password" 
+                            class="form-control api-key-input" 
+                            id="${config.id}" 
+                            placeholder="${config.placeholder}"
+                            autocomplete="off"
+                        >
+                    </div>
+                `;
+            });
+            apiKeysContainer.innerHTML = html;
+            loadApiKeys();
+        }
+
+        // Initialize
+        renderApiKeys();
+        saveBtn.addEventListener('click', saveApiKeys);
+    </script>
+</body>
+</html>
+

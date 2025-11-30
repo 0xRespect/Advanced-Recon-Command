@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recon Command Generator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-card: white;
+            --bg-command-item: #f8f9fa;
+            --text-primary: #333;
+            --text-secondary: #6c757d;
+            --text-empty: #6c757d;
+            --border-color: #667eea;
+            --shadow-card: 0 10px 30px rgba(0,0,0,0.2);
+            --shadow-section: 0 5px 15px rgba(0,0,0,0.1);
+            --input-border: #667eea;
+            --input-focus: rgba(102, 126, 234, 0.25);
+        }
+
+        [data-theme="dark"] {
+            --bg-primary: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            --bg-card: #1e1e2e;
+            --bg-command-item: #2a2a3e;
+            --text-primary: #e0e0e0;
+            --text-secondary: #b0b0b0;
+            --text-empty: #888;
+            --border-color: #7c3aed;
+            --shadow-card: 0 10px 30px rgba(0,0,0,0.5);
+            --shadow-section: 0 5px 15px rgba(0,0,0,0.3);
+            --input-border: #7c3aed;
+            --input-focus: rgba(124, 58, 237, 0.25);
+        }
+
+        body {
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px 0;
+            transition: background 0.3s ease;
+        }
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            box-shadow: var(--shadow-card);
+            padding: 30px;
+            margin-bottom: 30px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+        .dark-mode-toggle {
+            background: transparent;
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .dark-mode-toggle:hover {
+            background: var(--border-color);
+            color: white;
+            transform: scale(1.05);
+        }
+        .api-keys-btn {
+            background: var(--border-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 1.2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .api-keys-btn:hover {
+            background: var(--border-color);
+            opacity: 0.9;
+            transform: scale(1.05);
+            color: white;
+        }
+        .quick-nav {
+            background: var(--bg-card);
+            border-radius: 15px;
+            box-shadow: var(--shadow-card);
+            padding: 20px;
+            margin-bottom: 25px;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+        .quick-nav-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .nav-btn {
+            background: var(--bg-command-item);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            white-space: nowrap;
+        }
+        .nav-btn:hover {
+            background: var(--border-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .nav-btn:active {
+            transform: translateY(0);
+        }
+        .command-section {
+            background: var(--bg-card);
+            border-radius: 15px;
+            box-shadow: var(--shadow-section);
+            margin-bottom: 30px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border-left: 5px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        .command-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(135deg, var(--border-color), #9333ea);
+            transition: width 0.3s ease;
+        }
+        .command-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        [data-theme="dark"] .command-section:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+        }
+        .section-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(147, 51, 234, 0.1));
+            border-left: 4px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        [data-theme="dark"] .section-title {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(147, 51, 234, 0.2));
+        }
+        .section-title i {
+            font-size: 1.5rem;
+            color: var(--border-color);
+        }
+        .section-title:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(147, 51, 234, 0.15));
+            transform: translateX(5px);
+        }
+        [data-theme="dark"] .section-title:hover {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.3), rgba(147, 51, 234, 0.3));
+        }
+        .section-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        [data-theme="dark"] .section-description {
+            background: rgba(124, 58, 237, 0.1);
+        }
+        .section-description i {
+            color: var(--border-color);
+            margin-right: 8px;
+        }
+        .command-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: var(--bg-command-item);
+            border-radius: 8px;
+            border-left: 4px solid var(--border-color);
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .command-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+        .command-text {
+            font-family: 'Courier New', monospace;
+            background: #000000;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            word-break: break-all;
+            white-space: pre-wrap;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            border: 2px solid #333333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            line-height: 1.6;
+            position: relative;
+        }
+        .command-text::before {
+            content: '$';
+            color: #00ff00;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        [data-theme="dark"] .command-text {
+            background: #0a0a0a;
+            color: #00ff88;
+            border-color: #1a1a1a;
+        }
+        .command-text:hover {
+            border-color: var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        .btn-copy {
+            background: var(--border-color);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .btn-copy:hover {
+            background: var(--border-color);
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn-copy:active {
+            transform: translateY(0);
+        }
+        .btn-copy.copied {
+            background: #28a745;
+        }
+        .btn-generate {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 40px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        [data-theme="dark"] .btn-generate {
+            background: linear-gradient(135deg, #7c3aed 0%, #9333ea 100%);
+        }
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .domain-input {
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+        }
+        .domain-input:focus {
+            border-color: var(--input-border);
+            box-shadow: 0 0 0 0.2rem var(--input-focus);
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+        .domain-input::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.6;
+        }
+        .form-label {
+            color: var(--text-primary);
+            transition: color 0.3s ease;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: var(--text-primary);
+        }
+        .spinner-border {
+            color: var(--border-color);
+        }
+        .loading p {
+            color: var(--text-primary);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-empty);
+        }
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        .empty-state h3 {
+            color: var(--text-primary);
+        }
+        h1 {
+            color: var(--text-primary);
+            font-weight: 700;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+        .subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+            transition: color 0.3s ease;
+        }
+        .alert {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        @media (max-width: 768px) {
+            .command-text {
+                font-size: 0.75rem;
+            }
+            .header-card {
+                padding: 20px;
+            }
+            .header-card > div[style*="position: absolute"] {
+                position: relative !important;
+                top: auto !important;
+                right: auto !important;
+                margin-bottom: 15px;
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-card">
+            <div style="position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; align-items: center;">
+                <a href="/api-keys" class="api-keys-btn" title="Configure API Keys">
+                    <i class="bi bi-key"></i>
+                </a>
+                <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+                    <i class="bi bi-moon-fill" id="darkModeIcon"></i>
+                </button>
+            </div>
+            <h1><i class="bi bi-terminal"></i> Recon Command Generator</h1>
+            <p class="subtitle">Enter a domain to generate ready-to-run reconnaissance commands</p>
+            
+            <div class="row g-3 align-items-end">
+                <div class="col-md-9">
+                    <label for="domainInput" class="form-label fw-bold">Domain</label>
+                    <input 
+                        type="text" 
+                        class="form-control domain-input" 
+                        id="domainInput" 
+                        placeholder="example.com"
+                        autocomplete="off"
+                    >
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-generate w-100" id="generateBtn">
+                        <i class="bi bi-play-circle"></i> Generate Commands
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="loading" id="loadingDiv">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Generating commands...</p>
+        </div>
+
+        <div class="quick-nav" id="quickNav" style="display: none;">
+            <div class="quick-nav-title">
+                <i class="bi bi-list-ul"></i> Quick Navigation - التنقل السريع
+            </div>
+            <div class="nav-buttons" id="navButtons">
+                <!-- Navigation buttons will be generated here -->
+            </div>
+        </div>
+
+        <div id="commandsContainer">
+            <div class="empty-state">
+                <i class="bi bi-inbox"></i>
+                <h3>Enter a domain to get started</h3>
+                <p>Commands will appear here once you generate them</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const domainInput = document.getElementById('domainInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const commandsContainer = document.getElementById('commandsContainer');
+        const loadingDiv = document.getElementById('loadingDiv');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const htmlElement = document.documentElement;
+
+        // Dark Mode Functionality
+        function initDarkMode() {
+            // Check localStorage for saved theme preference
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            // Apply theme: saved preference > system preference > light
+            const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+            setTheme(theme);
+        }
+
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                htmlElement.setAttribute('data-theme', 'dark');
+                darkModeIcon.classList.remove('bi-moon-fill');
+                darkModeIcon.classList.add('bi-sun-fill');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                htmlElement.setAttribute('data-theme', 'light');
+                darkModeIcon.classList.remove('bi-sun-fill');
+                darkModeIcon.classList.add('bi-moon-fill');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        function toggleDarkMode() {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        }
+
+        // Initialize dark mode on page load
+        initDarkMode();
+
+        // Toggle dark mode on button click
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+
+        // Generate commands on button click
+        generateBtn.addEventListener('click', generateCommands);
+
+        // Generate commands on Enter key
+        domainInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                generateCommands();
+            }
+        });
+
+        // API Keys mapping
+        const apiKeysMap = {
+            '[api-key]': 'vt_api_key',
+            '[github_token]': 'github_token',
+            'YourAPIKEY': 'shodan_api_key',
+            '[asnno]': 'asn_number',
+            '<here>': 'wpscan_token'
+        };
+
+        // Replace API keys in command
+        function replaceApiKeys(command) {
+            let result = command;
+            
+            // Get API keys from localStorage
+            Object.keys(apiKeysMap).forEach(placeholder => {
+                const storageKey = apiKeysMap[placeholder];
+                const apiKey = localStorage.getItem(storageKey);
+                
+                if (apiKey) {
+                    // Replace all occurrences of the placeholder
+                    const regex = new RegExp(placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+                    result = result.replace(regex, apiKey);
+                }
+            });
+            
+            return result;
+        }
+
+        async function generateCommands() {
+            const domain = domainInput.value.trim();
+            
+            if (!domain) {
+                alert('Please enter a domain');
+                domainInput.focus();
+                return;
+            }
+
+            // Show loading
+            loadingDiv.style.display = 'block';
+            commandsContainer.innerHTML = '';
+            generateBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ domain: domain })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate commands');
+                }
+
+                const data = await response.json();
+                displayCommands(data.commands);
+            } catch (error) {
+                console.error('Error:', error);
+                commandsContainer.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i> Error generating commands: ${error.message}
+                    </div>
+                `;
+            } finally {
+                loadingDiv.style.display = 'none';
+                generateBtn.disabled = false;
+            }
+        }
+
+        // Smooth scroll to section
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                const offset = 100; // Offset for sticky nav
+                const elementPosition = element.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+
+        function displayCommands(commands) {
+            if (!commands || commands.length === 0) {
+                commandsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="bi bi-exclamation-circle"></i>
+                        <h3>No commands found</h3>
+                    </div>
+                `;
+                document.getElementById('quickNav').style.display = 'none';
+                return;
+            }
+
+            // Show quick navigation
+            document.getElementById('quickNav').style.display = 'block';
+
+            // Generate navigation buttons
+            let navHtml = '';
+            let html = '';
+            
+            commands.forEach(category => {
+                if (!category.commands || category.commands.length === 0) {
+                    return;
+                }
+
+                // Create section ID
+                const sectionId = `section-${category.id}`;
+                
+                // Add navigation button
+                navHtml += `
+                    <a href="#${sectionId}" class="nav-btn" onclick="event.preventDefault(); scrollToSection('${sectionId}');">
+                        ${category.category}
+                    </a>
+                `;
+
+                // Get icon based on category
+                const categoryIcons = {
+                    'Subdomain Enumeration': 'bi-diagram-3',
+                    'IP Enumeration': 'bi-globe',
+                    'Subdomain Validation': 'bi-check-circle',
+                    'URL Discovery': 'bi-link-45deg',
+                    'Parameter Extraction': 'bi-code-square',
+                    'Vulnerability Scanning': 'bi-shield-exclamation',
+                    'File Discovery': 'bi-file-earmark',
+                    'Parameter Fuzzing': 'bi-sliders',
+                    'Directory Bruteforce': 'bi-folder',
+                    'JavaScript Reconnaissance': 'bi-filetype-js',
+                    'Content Type Filtering': 'bi-funnel',
+                    'WordPress Reconnaissance': 'bi-wordpress',
+                    'Port Scanning': 'bi-router',
+                    'SQL Injection Testing': 'bi-database',
+                    'XSS Testing': 'bi-bug',
+                    'LFI Testing': 'bi-file-text',
+                    'CORS Testing': 'bi-shield-check',
+                    'Subdomain Takeover': 'bi-exclamation-triangle',
+                    '.git Folder Disclosure': 'bi-git',
+                    'SSRF Testing': 'bi-arrow-repeat',
+                    'Open Redirect Testing': 'bi-arrow-right-circle',
+                    'GF Patterns': 'bi-search',
+                    'URL Processing': 'bi-gear',
+                    'Utilities': 'bi-tools'
+                };
+                
+                const categoryIcon = categoryIcons[category.category] || 'bi-folder-fill';
+                
+                // Get description for each category
+                const categoryDescriptions = {
+                    'Subdomain Enumeration': 'Discover all subdomains of the target domain using various tools and public sources like Certificate Transparency, DNS records, and search engines.',
+                    'IP Enumeration': 'Extract IP addresses associated with the target domain from various sources including VirusTotal, AlienVault OTX, and URLScan.io.',
+                    'Subdomain Validation': 'Verify which discovered subdomains are live and accessible by checking HTTP/HTTPS responses and taking screenshots.',
+                    'URL Discovery': 'Crawl and collect URLs from live subdomains using active and passive methods to discover endpoints and pages.',
+                    'Parameter Extraction': 'Extract and filter URLs that contain parameters, which are prime targets for vulnerability testing.',
+                    'Vulnerability Scanning': 'Automated scanning for known vulnerabilities, misconfigurations, and CVEs using Nuclei templates.',
+                    'File Discovery': 'Identify sensitive files like backups, configuration files, logs, and documents that may expose sensitive information.',
+                    'Parameter Fuzzing': 'Discover hidden or undocumented parameters in endpoints that could lead to vulnerabilities like IDOR or injection flaws.',
+                    'Directory Bruteforce': 'Brute-force common directory and file paths to discover hidden admin panels, backups, and misconfigured endpoints.',
+                    'JavaScript Reconnaissance': 'Analyze JavaScript files to extract API endpoints, tokens, credentials, and internal application logic.',
+                    'Content Type Filtering': 'Filter URLs based on MIME types to identify HTML pages and JavaScript files for further analysis.',
+                    'WordPress Reconnaissance': 'Enumerate WordPress installations, plugins, themes, and users to identify outdated or vulnerable components.',
+                    'Port Scanning': 'Scan target IPs for open ports and running services to identify exposed services and potential attack vectors.',
+                    'SQL Injection Testing': 'Test endpoints for SQL injection vulnerabilities, especially in PHP, ASP, and JSP applications.',
+                    'XSS Testing': 'Detect Cross-Site Scripting vulnerabilities using automated tools and payloads, including blind XSS testing.',
+                    'LFI Testing': 'Test for Local File Inclusion vulnerabilities that could allow reading sensitive files from the server.',
+                    'CORS Testing': 'Check for misconfigured Cross-Origin Resource Sharing policies that could lead to unauthorized data access.',
+                    'Subdomain Takeover': 'Detect subdomains pointing to unclaimed external services that could be hijacked by attackers.',
+                    '.git Folder Disclosure': 'Identify exposed .git directories that may leak source code, credentials, and internal logic.',
+                    'SSRF Testing': 'Test for Server-Side Request Forgery vulnerabilities that could allow accessing internal resources or cloud metadata.',
+                    'Open Redirect Testing': 'Detect open redirect vulnerabilities that could be used in phishing attacks or session hijacking.',
+                    'GF Patterns': 'Filter URLs using GF patterns to identify potential vulnerabilities like XSS, SQLi, LFI, SSRF, and more.',
+                    'URL Processing': 'Process and manipulate URLs using tools like URO, QSReplace, and URLDedupe for better analysis.',
+                    'Utilities': 'Miscellaneous utility commands for cleaning, formatting, and processing recon data.'
+                };
+                
+                const categoryDescription = categoryDescriptions[category.category] || 'Commands for this category.';
+                
+                html += `
+                    <div class="command-section" id="${sectionId}">
+                        <div class="section-title">
+                            <i class="bi ${categoryIcon}"></i> 
+                            <span>${category.category}</span>
+                            <span style="margin-left: auto; font-size: 0.9rem; color: var(--text-secondary); font-weight: normal;">
+                                (${category.commands.length} ${category.commands.length === 1 ? 'command' : 'commands'})
+                            </span>
+                        </div>
+                        <div class="section-description">
+                            <i class="bi bi-info-circle"></i>
+                            ${categoryDescription}
+                        </div>
+                `;
+
+                category.commands.forEach(cmd => {
+                    // Replace API keys in the command
+                    const commandWithApiKeys = replaceApiKeys(cmd.command);
+                    
+                    html += `
+                        <div class="command-item">
+                            <div class="command-label">${cmd.label}</div>
+                            <div class="command-text" id="cmd-${category.id}-${cmd.id}">${escapeHtml(commandWithApiKeys)}</div>
+                            <button 
+                                class="btn btn-copy" 
+                                onclick="copyToClipboard('cmd-${category.id}-${cmd.id}', this)"
+                                data-command-id="${category.id}-${cmd.id}"
+                            >
+                                <i class="bi bi-clipboard"></i> Copy
+                            </button>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+            });
+
+            // Update navigation buttons
+            document.getElementById('navButtons').innerHTML = navHtml;
+            
+            commandsContainer.innerHTML = html;
+            
+            // Scroll to top to show navigation
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function copyToClipboard(elementId, button) {
+            const commandElement = document.getElementById(elementId);
+            const commandText = commandElement.textContent;
+
+            // Use modern Clipboard API
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(commandText).then(() => {
+                    showCopySuccess(button);
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                    fallbackCopy(commandText, button);
+                });
+            } else {
+                fallbackCopy(commandText, button);
+            }
+        }
+
+        function fallbackCopy(text, button) {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopySuccess(button);
+            } catch (err) {
+                console.error('Fallback copy failed:', err);
+                alert('Failed to copy to clipboard');
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function showCopySuccess(button) {
+            const originalHTML = button.innerHTML;
+            button.classList.add('copied');
+            button.innerHTML = '<i class="bi bi-check-circle"></i> Copied!';
+            
+            setTimeout(() => {
+                button.classList.remove('copied');
+                button.innerHTML = originalHTML;
+            }, 2000);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
+
