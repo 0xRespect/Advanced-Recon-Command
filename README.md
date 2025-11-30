@@ -1,17 +1,17 @@
-# ReconForge 🔥
+# Advanced-Recon-Command 🔥
 
 <div align="center">
 
-![ReconForge UI](screenshots/UI.png)
+![Advanced-Recon-Command UI](screenshots/UI.png)
 
-![ReconForge](https://img.shields.io/badge/ReconForge-Recon%20Command%20Generator-red?style=for-the-badge)
+![Advanced-Recon-Command](https://img.shields.io/badge/Advanced--Recon--Command-Recon%20Command%20Generator-red?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.7+-blue?style=for-the-badge&logo=python)
 ![Flask](https://img.shields.io/badge/Flask-3.0.0-green?style=for-the-badge&logo=flask)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
 **A powerful web-based reconnaissance command generator for bug bounty hunters and penetration testers**
 
-[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Screenshots](#-screenshots) • [Contributing](#-contributing)
+[Features](#-features) • [Installation](#-installation) • [Usage](#-usage) • [Contributing](#-contributing)
 
 </div>
 
@@ -26,7 +26,6 @@
 - [Usage](#-usage)
 - [Command Categories](#-command-categories)
 - [API Keys Configuration](#-api-keys-configuration)
-- [Screenshots](#-screenshots)
 - [Project Structure](#-project-structure)
 - [Contributing](#-contributing)
 - [Disclaimer](#-disclaimer)
@@ -34,9 +33,9 @@
 
 ## 🎯 Overview
 
-**ReconForge** is a comprehensive Flask web application designed to streamline the reconnaissance phase of bug bounty hunting and penetration testing. Simply enter a target domain, and the application automatically generates **100+ ready-to-run reconnaissance commands** organized into 24 categories.
+**Advanced-Recon-Command** is a comprehensive Flask web application designed to streamline the reconnaissance phase of bug bounty hunting and penetration testing. Simply enter a target domain, and the application automatically generates **100+ ready-to-run reconnaissance commands** organized into 24 categories.
 
-### Why ReconForge?
+### Why Advanced-Recon-Command?
 
 - ⚡ **Fast & Efficient**: Generate all recon commands in seconds
 - 🎨 **Beautiful UI**: Modern, responsive design with dark mode support
@@ -96,8 +95,8 @@
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/ReconForge.git
-cd ReconForge
+git clone https://github.com/0xRespect/Advanced-Recon-Command.git
+cd Advanced-Recon-Command
 ```
 
 ### Step 2: Install Dependencies
@@ -196,3 +195,59 @@ The following commands require API keys (configured in `/api-keys` page):
 | WPScan | `<here>` | WordPress Reconnaissance |
 
 **Note**: API keys are stored locally in your browser's localStorage. They are never transmitted to any server.
+
+## 📁 Project Structure
+
+```
+Advanced-Recon-Command/
+├── app.py                 # Flask application (main file)
+├── requirements.txt       # Python dependencies
+├── README.md             # This file
+├── screenshots/          # Screenshots directory
+│   └── UI.png           # Main UI screenshot
+└── templates/
+    ├── index.html       # Main page template
+    └── api_keys.html   # API keys configuration page
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+### Areas for Contribution
+
+- 🐛 Bug fixes
+- ✨ New command templates
+- 📝 Documentation improvements
+- 🎨 UI/UX enhancements
+- 🌐 Translations
+- 🔧 Performance optimizations
+
+## ⚠️ Disclaimer
+
+**This tool is for authorized security testing only.**
+
+- Always ensure you have proper authorization before conducting security assessments
+- Use this information responsibly and ethically
+- The authors are not responsible for any misuse of this tool
+- Unauthorized access to computer systems is illegal
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+
+**Made with ❤️ for the Bug Bounty Community**
+
+⭐ Star this repo if you find it useful!
+
+</div>
